@@ -30,13 +30,13 @@ def home_page():
     git_bash_path = st.text_input("Enter Git Bash executable path (e.g., C:/Program Files/Git/bin/bash.exe)", key='git_bash_path')  if execution_mode == "Git Bash" else None
 
     if st.button("Run Script"):        
-        error = execute_script(execution_mode, site_uuid, env, keyfile, passphrase_required, key_passphrase, git_bash_path)
-        if error:  # Check if there's an error first
-            st.error("An error occurred: " + error)
-        else:
-            st.success("Script executed successfully.")
-            st.text(output)  # Display any output from the script execution
-            go_to_page('result_page')  # Navigate to result page only if there's no error
+        # error = execute_script(execution_mode, site_uuid, env, keyfile, passphrase_required, key_passphrase, git_bash_path)
+        # if error:  # Check if there's an error first
+        #     st.error("An error occurred: " + error)
+        # else:
+        #     st.success("Script executed successfully.")
+        #     st.text(output)  # Display any output from the script execution
+        go_to_page('result_page')  # Navigate to result page only if there's no error
 
 
 def result_page():
@@ -50,8 +50,7 @@ def result_page():
     st.sidebar.title("Downloaded Files")
     search_files(download_location)
 
-    if 'output' in st.session_state:
-        st.subheader("Output:")
+    if 'selected_file_path' in st.session_state:
         display_file_content()
 
     if 'error' in st.session_state and st.session_state.error:

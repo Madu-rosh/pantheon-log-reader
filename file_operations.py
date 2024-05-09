@@ -27,6 +27,8 @@ def render_file_tree(items, base_path, filter_query=""):
             elif item['type'] == 'file':
                 if st.sidebar.button(item['name'], key=item['path']):
                     st.session_state.selected_file_path = item['path']
+                    st.rerun()  # Trigger a rerun to display the file content
+
 
 def display_file_content():
     """Display the contents of a file in the main area, clearing previous errors before processing."""
@@ -44,7 +46,6 @@ def display_file_content():
             else:
                 with open(file_path, "r", encoding='utf-8') as file:
                     content = file.read()
-                    # Use 'log' language syntax highlighting for log files, or auto-detect based on extension
                     language = 'log' if file_extension == '.log' else None
                     st.code(content, language=language, line_numbers=True)
         except Exception as e:
@@ -70,15 +71,19 @@ def search_files(base_path):
     """Search bar for files with a clear button styled as an 'X' inside the text input."""
     col1, col2 = st.sidebar.columns([0.9, 0.1])
     with col1:
-        search_query = st.text_input("Search files", value=st.session_state.get("file_search", ""), key="file_search")
+        # Ensure the search query updates session state each time it changes
+        search_query = st.text_input("Search files", value=st.session_state.get("file_search", ""), key="file_search", on_change=lambda: update_search_query(search_query))
     with col2:
         if st.button("X", key="clear_search"):
-            if "file_search" in st.session_state:
-                del st.session_state['file_search']  # Removing instead of setting to empty to fully clear the field
+            # Clear search and rerun to reset the file list display
+            st.session_state.file_search = ""  # Reset search query in session state
             st.rerun()  # Rerun the app to refresh the state without the search query
 
     items = list_directory(base_path)
-    if "file_search" in st.session_state:
-        render_file_tree(items, base_path, st.session_state["file_search"])
-    else:
-        render_file_tree(items, base_path)
+    # Use the current state of 'file_search' to filter items
+    render_file_tree(items, base_path, st.session_state.get("file_search", ""))
+
+def update_search_query(search_query):
+    """Update the search query in session state."""
+    st.session_state.file_search = search_query
+

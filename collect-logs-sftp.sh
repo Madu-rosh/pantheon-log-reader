@@ -1,12 +1,4 @@
 #!/bin/bash
-# Check SSH connection before executing scripts
-ssh -o BatchMode=yes -o ConnectTimeout=5 $ENV.$SITE_UUID@appserver.$ENV.$SITE_UUID.drush.in echo ssh_connection_ok
-if [ $? -ne 0 ]; then
-    echo "SSH connection failed"
-    exit 1
-fi
-
-
 # local directory path to copy files
 LOG_DIR="logs"
 
